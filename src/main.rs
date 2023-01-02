@@ -1,5 +1,4 @@
 mod cache;
-mod lecar_cache;
 mod lfu_cache;
 mod load;
 mod lru_cache;
@@ -7,7 +6,6 @@ mod preprocess;
 mod util;
 
 use crate::cache::{CacheType, UniCache};
-use crate::lecar_cache::LecarUniCache;
 use crate::lfu_cache::LfuUniCache;
 use crate::load::StoreCommand;
 use crate::lru_cache::LruUniCache;
@@ -34,12 +32,8 @@ fn main() {
     let mut lru_cache = LruUniCache::new(CACHE_CAPACITY);
     let mut lru_decoder = LruUniCache::new(CACHE_CAPACITY);
 
-    let mut lecar_cache = LecarUniCache::new(CACHE_CAPACITY);
-    let mut lecar_decoder = LecarUniCache::new(CACHE_CAPACITY);
-
     let mut lfu_res = Results::new(CacheType::LFU);
     let mut lru_res = Results::new(CacheType::LRU);
-    let mut lecar_res = Results::new(CacheType::LECAR);
 
     let file = File::open(FILE).unwrap();
     let reader = BufReader::new(file);
@@ -70,14 +64,6 @@ fn main() {
                     let end = Instant::now();
                     lru_res.update(start, encode_end, end, hit, compression_rate);
                 }
-                CacheType::LECAR => {
-                    let start = Instant::now();
-                    let (hit, compression_rate) = encode(&mut raw_command, &mut lecar_cache);
-                    let encode_end = Instant::now();
-                    decode(&mut raw_command, &mut lecar_decoder);
-                    let end = Instant::now();
-                    lecar_res.update(start, encode_end, end, hit, compression_rate);
-                }
             }
             assert_eq!(raw_command.sql, command.sql);
         }
@@ -100,7 +86,6 @@ fn main() {
         match cache_type {
             CacheType::LFU => println!("{}", lfu_res),
             CacheType::LRU => println!("{}", lru_res),
-            CacheType::LECAR => println!("{}", lecar_res),
         }
     }
 }

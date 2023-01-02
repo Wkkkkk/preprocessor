@@ -5,7 +5,6 @@ use strum_macros::EnumIter;
 pub enum CacheType {
     LFU,
     LRU,
-    LECAR,
 }
 
 // pub trait CacheItem: Clone + Debug + Hash + Eq {}

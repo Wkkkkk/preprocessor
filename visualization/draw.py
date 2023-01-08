@@ -131,10 +131,22 @@ if __name__ == "__main__":
     
     # Add legends
     handles, labels = ax.get_legend_handles_labels()
-    handles.reverse() # looks better in the reversed order
-    labels.reverse()
-    # set as top-left
-    fig.legend(handles, labels, prop={'size': SMALL_SIZE}, bbox_to_anchor=(0.3, 1.02))
+    legend_hanldes = [[], [], []]
+    legend_labels  = [[], [], []]
+    for (handle, label) in zip(handles, labels):
+        if label == "No caching" in label:
+            legend_hanldes[0].append(handle)
+            legend_labels[0].append(label)
+        if "2μs" in label:
+            legend_hanldes[1].append(handle)
+            legend_labels[1].append(label)
+        if "5μs" in label:
+            legend_hanldes[2].append(handle)
+            legend_labels[2].append(label)
+
+    fig.legend(legend_hanldes[0], legend_labels[0], prop={'size': SMALL_SIZE}, bbox_to_anchor=(0.8, 0.9))
+    fig.legend(legend_hanldes[1], legend_labels[1], prop={'size': SMALL_SIZE}, bbox_to_anchor=(0.65, 0.9))
+    fig.legend(legend_hanldes[2], legend_labels[2], prop={'size': SMALL_SIZE}, bbox_to_anchor=(0.35, 0.9))
     
     # Add Labels
     fig.text(0.5, 0.06, 'Data Size (Bytes)', ha='center', va='center', size=BIG_SIZE)
@@ -144,6 +156,6 @@ if __name__ == "__main__":
                         right=0.9,
                         top=0.7,
                         wspace=0.3,
-                        hspace=0.3)
+                        hspace=0.1)
     # Increase the dpi if needed
     plt.savefig("{}.pdf".format(input), dpi = 1000, bbox_inches='tight')
